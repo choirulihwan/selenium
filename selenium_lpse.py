@@ -27,12 +27,16 @@ for url in urls:
         tahun = arr_query[1].split("=")[1]
 
         # sys.exit()
-        PATH = Service("chromedriver.exe")
+        # windows
+        # PATH = Service("chromedriver.exe")
+        # linux
+        PATH = Service("./chromedriver")
 
         # initiate chrome selenium
         options = Options()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
+        # windows
         driver = webdriver.Chrome(service=PATH, options=options)
         driver.get(url)
         driver.maximize_window()
@@ -45,8 +49,8 @@ for url in urls:
         sleep(3)
 
         tables = driver.find_elements(By.XPATH, "//table[@id='tbllelang']/tbody/tr")
-        for i in range(1, len(tables)+1):
-            kode = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) +"]/td[1])")
+        for i in range(1, len(tables) + 1):
+            kode = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[1])")
             nama = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[1]/a)")
             tahun_anggaran = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[2])")
             tahapan = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[4]/a)")
