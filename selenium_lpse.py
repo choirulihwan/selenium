@@ -46,7 +46,7 @@ for url in urls:
         # grab data
         project_name = driver.find_element(By.XPATH, "//select[@name='tbllelang_length']/option[text()='Semua']")
         project_name.click()
-        sleep(3)
+        sleep(7)
 
         tables = driver.find_elements(By.XPATH, "//table[@id='tbllelang']/tbody/tr")
         for i in range(1, len(tables) + 1):

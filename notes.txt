@@ -1,0 +1,6 @@
+[convert to binary]
+pyinstaller --onefile selenium_lpse.py
+auto-py-to-exe > pilih one directory
+
+[chromedriver 115+]
+https://googlechromelabs.github.io/chrome-for-testing/
