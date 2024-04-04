@@ -1,3 +1,5 @@
+import sys
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -43,9 +45,11 @@ for url in urls:
 
         my_dict = {'kode': [], 'nama': [], 'hps': [], 'tahun_anggaran': [], 'tahapan': []}
 
+        # check combo display data sudah terload atau belum
+        sleep(3)
+
         # grab data
         project_name = driver.find_element(By.XPATH, "//select[@name='tbllelang_length']/option[text()='Semua']")
-        project_name.click()
         sleep(7)
 
         tables = driver.find_elements(By.XPATH, "//table[@id='tbllelang']/tbody/tr")
