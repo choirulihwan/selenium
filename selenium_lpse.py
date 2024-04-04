@@ -30,9 +30,9 @@ for url in urls:
 
         # sys.exit()
         # windows
-        # PATH = Service("chromedriver.exe")
+        PATH = Service("chromedriver.exe")
         # linux
-        PATH = Service("./chromedriver")
+        # PATH = Service("./chromedriver")
 
         # initiate chrome selenium
         options = Options()
@@ -61,6 +61,8 @@ for url in urls:
             hps = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[5])")
 
             # convert hps to float
+            nama_show = [nm.text for nm in nama][0]
+            print(nama_show)
             satuan = [hp.text for hp in hps][0].split()[1]
             angka = [hp.text for hp in hps][0].split()[0].replace(",", ".")
 
@@ -70,6 +72,7 @@ for url in urls:
                 nom = float(angka) * 1000000000
             else:
                 nom = float(angka) * 1000000000000
+
 
             my_dict['kode'].append([kd.text for kd in kode][0])
             my_dict['nama'].append([nm.text for nm in nama][0])
