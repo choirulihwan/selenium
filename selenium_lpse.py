@@ -4,6 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import Select
 from time import sleep
 import pandas as pd
 from urllib.parse import urlparse
@@ -17,7 +18,8 @@ with open('urls.txt') as f:
         urls.append(line.strip())
 
 # sys.exit()
-logging.basicConfig(filename='app.log', encoding='utf-8', filemode='w', format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename='app.log', encoding='utf-8', filemode='w',
+                    format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 logging.warning("Mulai Proses")
 print("[{}] Mulai Proses".format(datetime.now()))
 
@@ -30,9 +32,9 @@ for url in urls:
 
         # sys.exit()
         # windows
-        PATH = Service("chromedriver.exe")
+        # PATH = Service("chromedriver.exe")
         # linux
-        # PATH = Service("./chromedriver")
+        PATH = Service("./chromedriver")
 
         # initiate chrome selenium
         options = Options()
@@ -46,17 +48,22 @@ for url in urls:
         my_dict = {'kode': [], 'nama': [], 'hps': [], 'tahun_anggaran': [], 'tahapan': []}
 
         # check combo display data sudah terload atau belum
-        sleep(3)
+        sleep(7)
 
         # grab data
-        project_name = driver.find_element(By.XPATH, "//select[@name='tbllelang_length']/option[text()='Semua']")
+        project_name = driver.find_element(By.XPATH, "//select[@name='tbllelang_length']")
+        select = Select(project_name)
+        select.select_by_value("-1")
         sleep(7)
 
         tables = driver.find_elements(By.XPATH, "//table[@id='tbllelang']/tbody/tr")
+        # print(len(tables))
+        # sys.exit()
         for i in range(1, len(tables) + 1):
             kode = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[1])")
             nama = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[1]/a)")
-            tahun_anggaran = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[2])")
+            tahun_anggaran = driver.find_elements(By.XPATH,
+                                                  "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[2])")
             tahapan = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[4]/a)")
             hps = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[5])")
 
@@ -72,7 +79,6 @@ for url in urls:
                 nom = float(angka) * 1000000000
             else:
                 nom = float(angka) * 1000000000000
-
 
             my_dict['kode'].append([kd.text for kd in kode][0])
             my_dict['nama'].append([nm.text for nm in nama][0])
@@ -90,6 +96,7 @@ for url in urls:
 
         driver.close()
         driver.quit()
+
     except:
         logging.warning("%s Gagal", url)
         print("[{}] {} Gagal".format(datetime.now(), url))
