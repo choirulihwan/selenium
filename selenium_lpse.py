@@ -20,11 +20,11 @@ with open('urls.txt') as f:
     for line in f:
         urls.append(line.strip())
 
-# sys.exit()
 logging.basicConfig(filename='app.log', encoding='utf-8', filemode='w',
                     format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 logging.warning("Mulai Proses")
 print("[{}] Mulai Proses".format(datetime.now()))
+waittime = 10
 
 for url in urls:
     try:
@@ -50,10 +50,10 @@ for url in urls:
 
         my_dict = {'kode': [], 'nama': [], 'hps': [], 'tahun_anggaran': [], 'tahapan': [], 'lokasi': [],
                    'tgl_pengumuman_pemenang': [], 'link':[]}
-
+        # sleep(5)
 
         # wait for load combo display
-        wait = WebDriverWait(driver, 5)
+        wait = WebDriverWait(driver, waittime)
         wait.until(EC.presence_of_element_located((By.XPATH, "//select[@name='tbllelang_length']")))
 
         # grab data
@@ -62,7 +62,7 @@ for url in urls:
         select.select_by_value("-1")
 
         # wait for load table
-        wait = WebDriverWait(driver, 5)
+        wait = WebDriverWait(driver, waittime)
         wait.until(EC.presence_of_element_located((By.XPATH, "//table[@id='tbllelang']/tbody/tr")))
 
         tables = driver.find_elements(By.XPATH, "//table[@id='tbllelang']/tbody/tr")
@@ -71,17 +71,17 @@ for url in urls:
         window_handles_before = driver.window_handles
         # loop table content
         for i in range(1, len(tables) + 1):
-        # for i in range(1, 5):
-            kode = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[1])")
+            kode = driver.find_element(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[1])")
             nama = driver.find_element(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[1]/a)")
-            tahun_anggaran = driver.find_elements(By.XPATH,
+            tahun_anggaran = driver.find_element(By.XPATH,
                                                   "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[2])")
-            tahapan = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[4]/a)")
-            hps = driver.find_elements(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[5])")
+            tahapan = driver.find_element(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[4]/a)")
+            hps = driver.find_element(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[5])")
 
             # convert hps to float
-            satuan = [hp.text for hp in hps][0].split()[1]
-            angka = [hp.text for hp in hps][0].split()[0].replace(",", ".")
+            arrhps = hps.text.split()
+            satuan = arrhps[1]
+            angka = arrhps[0].replace(",", ".")
 
             if satuan == 'Jt':
                 nom = float(angka) * 1000000
@@ -90,14 +90,14 @@ for url in urls:
             else:
                 nom = float(angka) * 1000000000000
 
-            my_dict['kode'].append([kd.text for kd in kode][0])
+            my_dict['kode'].append(kode.text)
             my_dict['nama'].append(nama.text)
             my_dict['hps'].append(nom)
-            my_dict['tahun_anggaran'].append([thn.text for thn in tahun_anggaran][0])
-            my_dict['tahapan'].append([thp.text for thp in tahapan][0])
+            my_dict['tahun_anggaran'].append(tahun_anggaran.text)
+            my_dict['tahapan'].append(tahapan.text)
 
             nama.click()
-            wait = WebDriverWait(driver,5)
+            wait = WebDriverWait(driver,waittime)
             wait.until(EC.number_of_windows_to_be(len(window_handles_before) + 1))
             window_handles_after = driver.window_handles
 
@@ -110,7 +110,7 @@ for url in urls:
             try:
                 lokasi = driver.find_element(By.XPATH, "//table/tbody/tr[16]/td/ul/li").text
             except NoSuchElementException:
-                lokasi
+                lokasi = ''
 
             print(f"lokasi: {lokasi}")
             my_dict['lokasi'].append(lokasi)
@@ -121,7 +121,7 @@ for url in urls:
                 linktahapan = driver.find_element(By.XPATH, "//table/tbody/tr[6]/td/a")
                 window_tahapan_before = driver.window_handles
                 linktahapan.click()
-                wait = WebDriverWait(driver, 5)
+                wait = WebDriverWait(driver, waittime)
                 wait.until(EC.number_of_windows_to_be(len(window_tahapan_before) + 1))
                 window_tahapan_after = driver.window_handles
                 new_window_tahapan = [wh for wh in window_tahapan_after if wh not in window_tahapan_before][0]
@@ -145,7 +145,7 @@ for url in urls:
             driver.close()
 
             driver.switch_to.window(window_handles_before[0])
-            ActionChains(driver).scroll_by_amount(0, 100).perform()
+            ActionChains(driver).scroll_by_amount(0, 200).perform()
 
         # convert to excel
         # sys.exit()
@@ -158,13 +158,12 @@ for url in urls:
 
         driver.close()
         driver.quit()
-
-    except ElementClickInterceptedException:
+    except:
         logging.warning("%s Gagal", url)
         print("[{}] {} Gagal".format(datetime.now(), url))
-        # pass
-    else:
-        logging.warning("Akhir Proses")
-        print("[{}] Akhir Proses".format(datetime.now(), url))
+
+
+logging.warning("Akhir Proses")
+print("[{}] Akhir Proses".format(datetime.now(), url))
 
 
