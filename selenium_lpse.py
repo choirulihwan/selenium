@@ -153,14 +153,14 @@ for url in urls:
 
         df.to_excel(r'lpse/{}_{}_{}.xlsx'.format(path_url.netloc, kategori, tahun), index=False)
 
-        logging.warning("%s Berhasil", url)
-        print("[{}] {} Berhasil".format(datetime.now(), url))
+        logging.warning("%s => Berhasil", url)
+        print("[{}] {} => Berhasil".format(datetime.now(), url))
 
         driver.close()
         driver.quit()
     except:
-        logging.warning("%s Gagal", url)
-        print("[{}] {} Gagal".format(datetime.now(), url))
+        logging.warning("%s => Gagal", url)
+        print("[{}] {} => Gagal".format(datetime.now(), url))
 
 
 logging.warning("Akhir Proses")
