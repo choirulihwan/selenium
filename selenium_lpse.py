@@ -1,4 +1,5 @@
 import sys
+from xml.sax.expatreader import version
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -22,6 +23,9 @@ with open('urls.txt') as f:
 
 logging.basicConfig(filename='app.log', encoding='utf-8', filemode='w',
                     format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+version = '20240821.01'
+logging.warning("LPSE versi " + version)
 logging.warning("Mulai Proses")
 print("[{}] Mulai Proses".format(datetime.now()))
 waittime = 10

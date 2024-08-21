@@ -23,6 +23,9 @@ with open('urls.txt') as f:
 
 logging.basicConfig(filename='app_lite.log', encoding='utf-8', filemode='w',
                     format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
+version = '20240821.01'
+logging.warning("LPSE versi " + version)
 logging.warning("Mulai Proses")
 print("[{}] Mulai Proses".format(datetime.now()))
 waittime = 10
@@ -70,7 +73,6 @@ for url in urls:
 
         tables = driver.find_elements(By.XPATH, "//table[@id='tbllelang']/tbody/tr")
 
-        # try:
         # loop table content
         for i in range(1, len(tables) + 1):
             kode = driver.find_element(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[1])").text
@@ -104,11 +106,9 @@ for url in urls:
             my_dict['link'].append(" ")
 
             ActionChains(driver).scroll_by_amount(0, 200).perform()
-        # except StaleElementReferenceException:
-        #     pass
+
         # convert to excel
         # sys.exit()
-        # print(my_dict)
         df = pd.DataFrame(my_dict)
         df.to_excel(r'lpse/{}_{}_{}.xlsx'.format(path_url.netloc, kategori, tahun), index=False)
         logging.warning("%s => Berhasil", url)
