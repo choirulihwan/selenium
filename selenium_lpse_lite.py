@@ -64,7 +64,8 @@ for url in urls:
         # grab data
         project_name = driver.find_element(By.XPATH, "//select[@name='tbllelang_length']")
         select = Select(project_name)
-        select.select_by_value("-1")
+        #tidak ada option semua
+        select.select_by_value("100")
         sleep(5)
 
         # wait for load table
@@ -72,40 +73,45 @@ for url in urls:
         wait.until(EC.presence_of_element_located((By.XPATH, "//table[@id='tbllelang']/tbody/tr")))
 
         tables = driver.find_elements(By.XPATH, "//table[@id='tbllelang']/tbody/tr")
+        firstdata = driver.find_elements(By.XPATH, "//table[@id='tbllelang']/tbody/tr/td")
 
         # loop table content
-        for i in range(1, len(tables) + 1):
-            kode = driver.find_element(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[1])").text
-            nama = driver.find_element(By.XPATH,
-                                       "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[1]/a)").text
-            tahun_anggaran = driver.find_element(By.XPATH,
-                                                  "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[2])").text
-            tahapan = driver.find_element(By.XPATH,
-                                          "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[4]/a)").text
-            hps = driver.find_element(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[5])").text
+        if firstdata[0].text != "Tidak ditemukan data yang sesuai":
+            for i in range(1, len(tables) + 1):
+                kode = driver.find_element(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[1])").text
+                nama = driver.find_element(By.XPATH,
+                                           "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[1]/a)").text
+                tahun_anggaran = driver.find_element(By.XPATH,
+                                                      "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[2]/p[2])").text
+                tahapan = driver.find_element(By.XPATH,
+                                              "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[4]/a)").text
+                hps = driver.find_element(By.XPATH, "(//table[@id='tbllelang']/tbody/tr[" + str(i) + "]/td[5])").text
 
-            # convert hps to float
-            arrhps = hps.split()
-            satuan = arrhps[1]
-            angka = arrhps[0].replace(",", ".")
+                # convert hps to float
+                arrhps = hps.split()
+                satuan = arrhps[1]
+                angka = arrhps[0].replace(",", ".")
 
-            if satuan == 'Jt':
-                nom = float(angka) * 1000000
-            elif satuan == 'M':
-                nom = float(angka) * 1000000000
-            else:
-                nom = float(angka) * 1000000000000
+                if satuan == 'Jt':
+                    nom = float(angka) * 1000000
+                elif satuan == 'M':
+                    nom = float(angka) * 1000000000
+                else:
+                    nom = float(angka) * 1000000000000
 
-            my_dict['kode'].append(kode)
-            my_dict['nama'].append(nama)
-            my_dict['hps'].append(nom)
-            my_dict['tahun_anggaran'].append(tahun_anggaran)
-            my_dict['tahapan'].append(tahapan)
-            my_dict['lokasi'].append(" ")
-            my_dict['tgl_pengumuman_pemenang'].append(" ")
-            my_dict['link'].append(" ")
+                my_dict['kode'].append(kode)
+                my_dict['nama'].append(nama)
+                my_dict['hps'].append(nom)
+                my_dict['tahun_anggaran'].append(tahun_anggaran)
+                my_dict['tahapan'].append(tahapan)
+                my_dict['lokasi'].append(" ")
+                my_dict['tgl_pengumuman_pemenang'].append(" ")
+                my_dict['link'].append(" ")
 
-            ActionChains(driver).scroll_by_amount(0, 200).perform()
+                ActionChains(driver).scroll_by_amount(0, 200).perform()
+        else:
+            logging.warning("%s => Proyek belum ada", url)
+            print("[{}] {} => Proyek belum ada".format(datetime.now(), url))
 
         # convert to excel
         # sys.exit()
@@ -116,8 +122,9 @@ for url in urls:
         #
         driver.close()
         driver.quit()
-    except:
+    except Exception as e:
         logging.warning("%s => Gagal", url)
+        logging.warning("%s", e)
         print("[{}] {} => Gagal".format(datetime.now(), url))
 
 
