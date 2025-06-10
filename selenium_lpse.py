@@ -112,6 +112,15 @@ def grab_data(driver, waittime, my_dict):
 
             driver.switch_to.window(window_handles_before[0])
             ActionChains(driver).scroll_by_amount(0, 200).perform()
+
+        # search for next
+        nextlink = idriver.find_element(By.XPATH, "//a[@data-dt-idx = 'next']")
+        if nextlink:
+            nextlink.click()
+            WebDriverWait(idriver, waittime)
+            idriver.execute_script("document.documentElement.scrollTop = 0;")
+            grab_data(idriver, iwaittime, imydict)
+
     else:
         logging.warning("%s => Proyek belum ada", url)
         print("[{}] {} => Proyek belum ada".format(datetime.now(), url))
@@ -163,12 +172,12 @@ for url in urls:
         # end grabdata
 
         # search for next
-        nextlink = idriver.find_element(By.XPATH, "//a[@data-dt-idx = 'next']")
-        if nextlink:
-            nextlink.click()
-            wait = WebDriverWait(idriver, 10)
-            idriver.execute_script("document.documentElement.scrollTop = 0;")
-            result_dict = grab_data(idriver, iwaittime, imydict)
+        # nextlink = idriver.find_element(By.XPATH, "//a[@data-dt-idx = 'next']")
+        # if nextlink:
+        #     nextlink.click()
+        #     wait = WebDriverWait(idriver, 10)
+        #     idriver.execute_script("document.documentElement.scrollTop = 0;")
+        #     result_dict = grab_data(idriver, iwaittime, imydict)
 
         # convert to excel
         # sys.exit()
