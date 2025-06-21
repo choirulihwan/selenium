@@ -72,11 +72,13 @@ def grab_data(driver, waittime, my_dict):
 
         # search for next
         nextlink = idriver.find_element(By.XPATH, "//a[@data-dt-idx = 'next']")
-        if nextlink:
+        try:
             nextlink.click()
             WebDriverWait(idriver, waittime)
             idriver.execute_script("document.documentElement.scrollTop = 0;")
             grab_data(idriver, iwaittime, imydict)
+        except ElementClickInterceptedException:
+            pass
 
     else:
         logging.warning("%s => Proyek belum ada", url)

@@ -5,7 +5,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select, WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException
 from time import sleep
 import pandas as pd
 from urllib.parse import urlparse
@@ -115,11 +115,13 @@ def grab_data(driver, waittime, my_dict):
 
         # search for next
         nextlink = idriver.find_element(By.XPATH, "//a[@data-dt-idx = 'next']")
-        if nextlink:
+        try:
             nextlink.click()
             WebDriverWait(idriver, waittime)
             idriver.execute_script("document.documentElement.scrollTop = 0;")
             grab_data(idriver, iwaittime, imydict)
+        except ElementClickInterceptedException:
+            pass
 
     else:
         logging.warning("%s => Proyek belum ada", url)
@@ -170,14 +172,6 @@ for url in urls:
                    'tgl_pengumuman_pemenang': [], 'link': []}
         result_dict = grab_data(idriver, iwaittime, imydict)
         # end grabdata
-
-        # search for next
-        # nextlink = idriver.find_element(By.XPATH, "//a[@data-dt-idx = 'next']")
-        # if nextlink:
-        #     nextlink.click()
-        #     wait = WebDriverWait(idriver, 10)
-        #     idriver.execute_script("document.documentElement.scrollTop = 0;")
-        #     result_dict = grab_data(idriver, iwaittime, imydict)
 
         # convert to excel
         # sys.exit()
