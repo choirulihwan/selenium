@@ -1,5 +1,5 @@
 [convert to binary]
-pyinstaller --onefile selenium_lpse.py
+pyinstaller --onefile selenium_spse.py
 auto-py-to-exe > pilih one directory
 
 [chromedriver 115+]

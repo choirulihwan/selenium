@@ -138,7 +138,7 @@ with open('urls.txt') as f:
 logging.basicConfig(filename='app.log', encoding='utf-8', filemode='w',
                     format='[%(asctime)s] %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
-version = '20240821.01'
+version = '20250717.01'
 logging.warning("LPSE versi " + version)
 logging.warning("Mulai Proses")
 print("[{}] Mulai Proses".format(datetime.now()))
@@ -158,7 +158,11 @@ for url in urls:
 
         idriver = webdriver.Chrome(service=PATH, options=options)
 
+        # https: // spse.inaproc.id / jogjakota / lelang?kategoriId = 2 & tahun = 2025
         path_url = urlparse(url)
+        path_segments  = path_url.path.split('/')
+        kota = [segment for segment in path_segments if segment][0]
+
         arr_query = path_url.query.split("&")
         kategori = arr_query[0].split("=")[1]
         tahun = arr_query[1].split("=")[1]
@@ -176,7 +180,7 @@ for url in urls:
         # convert to excel
         # sys.exit()
         df = pd.DataFrame(imydict)
-        df.to_excel(r'lpse/{}_{}_{}.xlsx'.format(path_url.netloc, kategori, tahun), index=False)
+        df.to_excel(r'lpse/{}_{}_{}_{}.xlsx'.format(path_url.netloc, kota, kategori, tahun), index=False)
 
         logging.warning("%s => Berhasil", url)
         print("[{}] {} => Berhasil".format(datetime.now(), url))
