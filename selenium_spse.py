@@ -62,56 +62,62 @@ def grab_data(driver, waittime, my_dict):
             my_dict['tahun_anggaran'].append(tahun_anggaran.text)
             my_dict['tahapan'].append(tahapan.text)
 
-            nama.click()
-            wait = WebDriverWait(driver, waittime)
-            wait.until(EC.number_of_windows_to_be(len(window_handles_before) + 1))
-            window_handles_after = driver.window_handles
-
-            new_window_handle = [wh for wh in window_handles_after if wh not in window_handles_before][0]
-            driver.switch_to.window(new_window_handle)
-
-            new_tab_url = driver.current_url
-            # print(f"URL of detail: {new_tab_url}")
-
             try:
-                lokasi = driver.find_element(By.XPATH, "//table/tbody/tr[16]/td/ul/li").text
-            except NoSuchElementException:
-                lokasi = ''
-
-            # print(f"lokasi: {lokasi}")
-            my_dict['lokasi'].append(lokasi)
-            my_dict['link'].append(new_tab_url)
-
-            # start window tahapan
-            try:
-                linktahapan = driver.find_element(By.XPATH, "//table/tbody/tr[6]/td/a")
-                window_tahapan_before = driver.window_handles
-                linktahapan.click()
+                nama.click()
                 wait = WebDriverWait(driver, waittime)
-                wait.until(EC.number_of_windows_to_be(len(window_tahapan_before) + 1))
-                window_tahapan_after = driver.window_handles
-                new_window_tahapan = [wh for wh in window_tahapan_after if wh not in window_tahapan_before][0]
-                driver.switch_to.window(new_window_tahapan)
-                new_tab_tahapan = driver.current_url
-                # print(f"URL of the tahapan: {new_tab_tahapan}")
+                wait.until(EC.number_of_windows_to_be(len(window_handles_before) + 1))
+                window_handles_after = driver.window_handles
+
+                new_window_handle = [wh for wh in window_handles_after if wh not in window_handles_before][0]
+                driver.switch_to.window(new_window_handle)
+
+                new_tab_url = driver.current_url
+                # print(f"URL of detail: {new_tab_url}")
 
                 try:
-                    tgl_tahapan = driver.find_element(By.XPATH, "//table/tbody/tr[10]/td[3]").text
+                    lokasi = driver.find_element(By.XPATH, "//table/tbody/tr[16]/td/ul/li").text
                 except NoSuchElementException:
-                    tgl_tahapan = ''
+                    lokasi = ''
 
-                # print(f"tgl tahapan: {tgl_tahapan}")
-                my_dict['tgl_pengumuman_pemenang'].append(tgl_tahapan)
+                # print(f"lokasi: {lokasi}")
+                my_dict['lokasi'].append(lokasi)
+                my_dict['link'].append(new_tab_url)
+
+                # start window tahapan
+                try:
+                    linktahapan = driver.find_element(By.XPATH, "//table/tbody/tr[6]/td/a")
+                    window_tahapan_before = driver.window_handles
+                    linktahapan.click()
+                    wait = WebDriverWait(driver, waittime)
+                    wait.until(EC.number_of_windows_to_be(len(window_tahapan_before) + 1))
+                    window_tahapan_after = driver.window_handles
+                    new_window_tahapan = [wh for wh in window_tahapan_after if wh not in window_tahapan_before][0]
+                    driver.switch_to.window(new_window_tahapan)
+                    # new_tab_tahapan = driver.current_url
+                    # print(f"URL of the tahapan: {new_tab_tahapan}")
+
+                    try:
+                        tgl_tahapan = driver.find_element(By.XPATH, "//table/tbody/tr[10]/td[3]").text
+                    except NoSuchElementException:
+                        tgl_tahapan = ''
+
+                    # print(f"tgl tahapan: {tgl_tahapan}")
+                    my_dict['tgl_pengumuman_pemenang'].append(tgl_tahapan)
+                    driver.close()
+                except:
+                    my_dict['tgl_pengumuman_pemenang'].append('')
+                # end window tahapan
+
+                driver.switch_to.window(new_window_handle)
                 driver.close()
-            except:
+                driver.switch_to.window(window_handles_before[0])
+                ActionChains(driver).scroll_by_amount(0, 100).perform()
+
+            except ElementClickInterceptedException:
+                my_dict['lokasi'].append('')
+                my_dict['link'].append('')
                 my_dict['tgl_pengumuman_pemenang'].append('')
-            # end window tahapan
-
-            driver.switch_to.window(new_window_handle)
-            driver.close()
-
-            driver.switch_to.window(window_handles_before[0])
-            ActionChains(driver).scroll_by_amount(0, 100).perform()
+                pass
 
         # search for next
         nextlink = idriver.find_element(By.XPATH, "//a[@data-dt-idx = 'next']")
